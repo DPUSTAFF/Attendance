@@ -1,0 +1,36 @@
+# Implementing a 5-qubit Quantum Fourier Transform.
+
+from qiskit import QuantumCircuit, transpile
+from qiskit_aer import Aer
+import numpy as np
+
+# ----- Number of Qubits -----
+n = 5  
+
+# ----- Create Quantum Circuit -----
+qc = QuantumCircuit(n)
+
+# ----- Quantum Fourier Transform -----
+for j in range(n):
+    qc.h(j)
+    for k in range(j + 1, n):
+        qc.cp(np.pi / (2 ** (k - j)), k, j)
+
+# ----- Swap Qubits for Bit-Reversal -----
+for i in range(n // 2):
+    qc.swap(i, n - i - 1)
+
+# ----- Display Circuit -----
+print("Quantum Fourier Transform Circuit:")
+print(qc.draw(output='text'))
+
+# ----- Run on Statevector Simulator -----
+backend = Aer.get_backend('aer_simulator')
+qc.save_statevector()                      # ensure simulator saves quantum state
+tqc = transpile(qc, backend)
+result = backend.run(tqc).result()
+state = result.data(0)["statevector"]
+
+# ----- Display Final Quantum State -----
+print("\nFinal Quantum Statevector:")
+print(state)
