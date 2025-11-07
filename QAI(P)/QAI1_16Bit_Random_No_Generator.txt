@@ -1,0 +1,28 @@
+# Generate a 16-qubit random number using Qiskit and quantum superposition.
+
+# --- Quantum Circuit Simulation using AerSimulator ---
+from qiskit import QuantumCircuit, transpile
+from qiskit_aer import AerSimulator
+
+# Step 1: Create a 16-qubit quantum circuit with 16 classical bits
+qc = QuantumCircuit(16, 16)
+
+# Step 2: Apply Hadamard gate to all qubits (creates superposition)
+qc.h(range(16))
+
+# Step 3: Measure all qubits
+qc.measure(range(16), range(16))
+
+# Step 4: Display the circuit
+print("Quantum Circuit:")
+print(qc.draw(output='text'))
+
+# Step 5: Run on AerSimulator backend
+backend = AerSimulator()
+tqc = transpile(qc, backend)
+result = backend.run(tqc, shots=1).result()
+
+# Step 6: Get and print counts
+counts = result.get_counts()
+print("\nMeasurement outcomes:")
+print(counts)
